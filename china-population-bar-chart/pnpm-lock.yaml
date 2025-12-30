@@ -11,9 +11,15 @@ importers:
       d3-geo:
         specifier: ^3.1.1
         version: 3.1.1
+      gsap:
+        specifier: ^3.14.2
+        version: 3.14.2
       three:
         specifier: ^0.182.0
         version: 0.182.0
+      three-spritetext:
+        specifier: ^1.10.0
+        version: 1.10.0(three@0.182.0)
     devDependencies:
       '@types/d3-geo':
         specifier: ^3.1.0
@@ -192,6 +198,9 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
+  gsap@3.14.2:
+    resolution: {integrity: sha512-P8/mMxVLU7o4+55+1TCnQrPmgjPKnwkzkXOK1asnR9Jg2lna4tEY5qBJjMmAaOBDDZWtlRjBXjLa0w53G/uBLA==}
+
   internmap@2.0.3:
     resolution: {integrity: sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==}
     engines: {node: '>=12'}
@@ -338,6 +347,12 @@ packages:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
+  three-spritetext@1.10.0:
+    resolution: {integrity: sha512-t08iP1FCU1lQh8T5MmCpdijKgas8GDHJE0LqMGBuVu3xqMMpFnEZhTlih7FlxLPQizHIGoumUSpfOlY1GO/Tgg==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      three: '>=0.86.0'
+
   three@0.182.0:
     resolution: {integrity: sha512-GbHabT+Irv+ihI1/f5kIIsZ+Ef9Sl5A1Y7imvS5RQjWgtTPfPnZ43JmlYI7NtCRDK9zir20lQpfg8/9Yd02OvQ==}
 
@@ -473,6 +488,8 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
+  gsap@3.14.2: {}
+
   internmap@2.0.3: {}
 
   lightningcss-android-arm64@1.30.2:
@@ -571,6 +588,10 @@ snapshots:
       '@rolldown/binding-win32-x64-msvc': 1.0.0-beta.50
 
   source-map-js@1.2.1: {}
+
+  three-spritetext@1.10.0(three@0.182.0):
+    dependencies:
+      three: 0.182.0
 
   three@0.182.0: {}
 
