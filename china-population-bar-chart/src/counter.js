@@ -1,7 +1,3 @@
-/**
- * 示例工具：为元素绑定点击计数逻辑，
- * 演示如何在项目中集成简单的交互组件。
- */
 export function setupCounter(element) {
   let counter = 0
   const setCounter = (count) => {
