@@ -59,7 +59,7 @@ function loadTextureWithFallback(urls) {
  * @param {number} [params.opacity=0.95] - 透明度
  * @returns {THREE.Group} 瓦片组
  */
-function buildTiandituTiles({ box, bounds, zoom, token, layer, z = -12, opacity = 0.95 }) {
+function buildTiandituTiles({ box, bounds, zoom, token, layer, z = -12, opacity =1, renderOrder = 2 }) {
   const group = new THREE.Group();
   // 经纬度边界：优先使用 features 聚合得到的 bounds，其次使用绘制边界的包围盒 box
   const toLonLat = (x, y) => mercator.invert([x, y]);
@@ -161,14 +161,14 @@ function buildTiandituTiles({ box, bounds, zoom, token, layer, z = -12, opacity 
           depthWrite: false,
           stencilWrite: true,
           stencilFunc: THREE.EqualStencilFunc,
-          stencilRef: 1,
+          stencilRef: 1 ,
           stencilFail: THREE.KeepStencilOp,
           stencilZFail: THREE.KeepStencilOp,
           stencilZPass: THREE.KeepStencilOp,
         });
         const tileMesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
         tileMesh.position.set(cx, cy, z);
-        tileMesh.renderOrder = 2;
+        tileMesh.renderOrder = renderOrder;
         group.add(tileMesh);
       });
     }
@@ -191,7 +191,7 @@ function buildTiandituTiles({ box, bounds, zoom, token, layer, z = -12, opacity 
  * @param {number} [params.opacity=0.95]
  * @returns {THREE.Group}
  */
-function buildTemplateTiles({ box, bounds, zoom, template, yFlip = false, z = -12, opacity = 0.95 }) {
+function buildTemplateTiles({ box, bounds, zoom, template, yFlip = false, z = -12, opacity = 0.95, renderOrder = 2 }) {
   const group = new THREE.Group();
   const toLonLat = (x, y) => mercator.invert([x, y]);
   const toLonLatBox = (x, y) => mercator.invert([x, -y]);
@@ -278,7 +278,7 @@ function buildTemplateTiles({ box, bounds, zoom, template, yFlip = false, z = -1
       });
       const tileMesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
       tileMesh.position.set(cx, cy, z);
-      tileMesh.renderOrder = 2;
+      tileMesh.renderOrder = renderOrder;
       group.add(tileMesh);
     }
   }
@@ -303,9 +303,13 @@ export function initBaseLayers({ box, bounds }) {
    */
   const TDT_TOKEN = env.VITE_TDT_TOKEN || env.VITE_TDT_TK || getTdtToken() || "";
   let TDT_LAYER = env.VITE_TDT_LAYER || "tdt-img";
-  const TDT_ZOOM = Number(env.VITE_TDT_ZOOM || 9);
+  const TDT_ZOOM = Number(env.VITE_TDT_ZOOM || 10);
   let TDT_LABEL_LAYER = env.VITE_TDT_LABEL_LAYER || "";
   const ENABLE_TDT_LABEL = String(env.VITE_ENABLE_TDT_LABEL || "").toLowerCase() === "true";
+  const TDT_BASE_Z = Number(env.VITE_TDT_BASE_Z || -12);
+  const TDT_BASE_RO = Number(env.VITE_TDT_BASE_RO || 2);
+  const TDT_LABEL_Z = Number(env.VITE_TDT_LABEL_Z || -11.5);
+  const TDT_LABEL_RO = Number(env.VITE_TDT_LABEL_RO || 2);
   const normalize = (l) => {
     if (!l) return l;
     if (l === "img_w") return "tdt-img";
@@ -324,8 +328,9 @@ export function initBaseLayers({ box, bounds }) {
       zoom: TDT_ZOOM,
       token: TDT_TOKEN,
       layer: TDT_LAYER,
-      z: -12,
+      z: TDT_BASE_Z,
       opacity: 0.95,
+      renderOrder: TDT_BASE_RO,
     });
     group.add(tdtGroup);
     if (TDT_LABEL_LAYER && ENABLE_TDT_LABEL) {
@@ -335,8 +340,9 @@ export function initBaseLayers({ box, bounds }) {
         zoom: TDT_ZOOM,
         token: TDT_TOKEN,
         layer: TDT_LABEL_LAYER,
-        z: -11.5,
+        z: TDT_LABEL_Z,
         opacity: 1.0,
+        renderOrder: TDT_LABEL_RO,
       });
       group.add(labelGroup);
     }
@@ -352,8 +358,9 @@ export function initBaseLayers({ box, bounds }) {
       zoom: TMS_ZOOM,
       template: TMS_TEMPLATE,
       yFlip: TMS_Y_FLIP,
-      z: -12.2,
+      z: TDT_BASE_Z - 0.2,
       opacity: 0.95,
+      renderOrder: TDT_BASE_RO,
     });
     group.add(baseTiles);
   }
@@ -364,8 +371,9 @@ export function initBaseLayers({ box, bounds }) {
       zoom: TMS_ZOOM,
       template: TMS_OVERLAY_TEMPLATE,
       yFlip: TMS_Y_FLIP,
-      z: -11.4,
+      z: TDT_LABEL_Z,
       opacity: 1.0,
+      renderOrder: TDT_LABEL_RO,
     });
     group.add(overlayTiles);
   }

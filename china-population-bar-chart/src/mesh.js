@@ -9,12 +9,21 @@ import { buildStencilMask, getAggBounds, getFeatureCenterXY } from "./utils/tile
 const envFlags = import.meta && import.meta.env ? import.meta.env : {};
 const SHOW_BOUNDARY = String(envFlags.VITE_SHOW_BOUNDARY || "true").toLowerCase() === "true";
 const SHOW_NAMES = String(envFlags.VITE_SHOW_NAMES || "false").toLowerCase() === "true";
+const SHOW_BOUNDARY_LINES = String(envFlags.VITE_SHOW_BOUNDARY_LINES || "false").toLowerCase() === "true";
 const chinaMap = new THREE.Group();
 const boundaryGroup = new THREE.Group();
 const BAR_MIN_HEIGHT = 4;
 const BAR_MAX_RATIO = 0.12;
 const BAR_SIZE_RATIO = 0.006;
 const LABEL_HEIGHT_RATIO = 0.02;
+const TDT_BASE_Z = Number(envFlags.VITE_TDT_BASE_Z || -12);
+const MAP_EXTRUDE_DEPTH = Number(envFlags.VITE_MAP_EXTRUDE_DEPTH || 6);
+const MAP_EXTRUDE_OPACITY = Number(envFlags.VITE_MAP_EXTRUDE_OPACITY || 0.22);
+const MAP_EXTRUDE_COLOR = String(envFlags.VITE_MAP_EXTRUDE_COLOR || "#1f2d3d");
+const MAP_EMISSIVE_COLOR = String(envFlags.VITE_MAP_EMISSIVE_COLOR || "#00ffff");
+const MAP_EMISSIVE_INTENSITY = Number(envFlags.VITE_MAP_EMISSIVE_INTENSITY || 0.35);
+const MAP_EXTRUDE_EPS = Number(envFlags.VITE_MAP_EXTRUDE_EPS || 0.1);
+const MAP_EXTRUDE_Z = Number(envFlags.VITE_MAP_EXTRUDE_Z || (TDT_BASE_Z - MAP_EXTRUDE_DEPTH - MAP_EXTRUDE_EPS));
 
 const mercator = geoMercator().center([105, 34]).translate([0, 0]).scale(3500);
 
@@ -157,33 +166,50 @@ function createPolygon(coordinates) {
       pts.push(new THREE.Vector2(x, -y));
     });
     rings.push(pts);
-    const attribute = new THREE.Float32BufferAttribute(vertices, 3);
-    bufferGeometry.setAttribute("position", attribute);
-    bufferGeometry.computeBoundingBox();
-
-    const lineMaterial = new THREE.LineBasicMaterial({ color: "white", depthTest: false });
-    const line = new THREE.Line(bufferGeometry, lineMaterial);
-    line.renderOrder = 3;
-    group.add(line);
+    if (SHOW_BOUNDARY_LINES) {
+      const attribute = new THREE.Float32BufferAttribute(vertices, 3);
+      bufferGeometry.setAttribute("position", attribute);
+      bufferGeometry.computeBoundingBox();
+      const lineMaterial = new THREE.LineBasicMaterial({ color: "white", depthTest: false });
+      const line = new THREE.Line(bufferGeometry, lineMaterial);
+      line.renderOrder = 3;
+      group.add(line);
+    }
   });
 
   if (rings.length) {
     const shape = new THREE.Shape(rings[0]);
     for (let i = 1; i < rings.length; i++) shape.holes.push(new THREE.Path(rings[i]));
     const extrude = new THREE.ExtrudeGeometry(shape, {
-      depth: 2,
+      depth: MAP_EXTRUDE_DEPTH,
       bevelEnabled: false,
       steps: 1,
+      material: 0,
+      extrudeMaterial: 1,
     });
-    const mat = new THREE.MeshPhongMaterial({
-      color: new THREE.Color(0x2c3e50),
+    const matTop = new THREE.MeshBasicMaterial({
+      colorWrite: false,
       transparent: true,
-      opacity: 0.18,
-      shininess: 20,
+      opacity: 0,
+      depthWrite: false,
       depthTest: true,
     });
-    const mesh = new THREE.Mesh(extrude, mat);
-    mesh.position.z = -2;
+    const matSide = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(MAP_EXTRUDE_COLOR),
+      transparent: true,
+      opacity: MAP_EXTRUDE_OPACITY,
+      roughness: 0.85,
+      metalness: 0.0,
+      emissive: new THREE.Color(MAP_EMISSIVE_COLOR),
+      emissiveIntensity: MAP_EMISSIVE_INTENSITY,
+      depthTest: true,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: 1,
+      polygonOffsetUnits: 1,
+    });
+    const mesh = new THREE.Mesh(extrude, [matTop, matSide]);
+    mesh.position.z = MAP_EXTRUDE_Z;
     mesh.renderOrder = 2;
     group.add(mesh);
   }

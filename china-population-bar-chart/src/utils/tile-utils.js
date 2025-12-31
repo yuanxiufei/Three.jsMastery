@@ -63,9 +63,8 @@ export function buildStencilMask(features, mercator) {
         rings.push(pts);
       });
       if (rings.length) {
-        // 首个 ring 为外轮廓，其余 ring 作为洞
+        // 仅使用外轮廓，不保留洞，避免遮罩出现“镂空”效果
         const shape = new THREE.Shape(rings[0]);
-        for (let i = 1; i < rings.length; i++) shape.holes.push(new THREE.Path(rings[i]));
         const geo = new THREE.ShapeGeometry(shape);
         const mesh = new THREE.Mesh(geo, mat);
         mesh.position.z = -12;
