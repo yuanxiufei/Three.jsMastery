@@ -2,6 +2,30 @@
 
 本仓库用于学习与实践 Three.js。当前包含一个示例子目录 `first-scene/`，演示如何在浏览器中通过 ES Modules 加载 Three.js 并渲染一个基础场景。
 
+## 项目学习主题索引
+
+- first-scene（入门场景）
+  - 学习内容：场景/相机/渲染器的基本搭建，添加立方体与光源
+  - 入口文件：[first-scene/index.js](file:///d:/code/threejs/Three.jsMastery/first-scene/index.js)
+- data-gui（参数调试面板）
+  - 学习内容：使用 lil-gui 调整材质颜色、位置与灯光参数，事件回调 onChange/onFinishChange
+  - 入口文件：[data-gui/index.js](file:///d:/code/threejs/Three.jsMastery/data-gui/index.js)
+- perspective-camera（透视相机与可视化）
+  - 学习内容：相机 fov/aspect/near/far 的作用；结合相机辅助（CameraHelper）与面板实时调整并更新投影矩阵
+  - 入口文件：[perspective-camera/index.js](file:///d:/code/threejs/Three.jsMastery/perspective-camera/index.js)
+- buffer-geometry（缓冲几何体与索引）
+  - 学习内容：BufferGeometry 的 setAttribute、索引（geometry.index）、TypedArray（Float32Array/Uint16Array），MeshBasicMaterial 与双面渲染
+  - 入口文件：[buffer-geometry/index.js](file:///d:/code/threejs/Three.jsMastery/buffer-geometry/index.js)，示例几何：[mesh.js](file:///d:/code/threejs/Three.jsMastery/buffer-geometry/mesh.js)
+- point-line-mesh（点/线/面/圆柱几何）
+  - 学习内容：Points/Line/Mesh 的区别；PointsMaterial/LineBasicMaterial/MeshBasicMaterial；PlaneGeometry 与 CylinderGeometry 的参数理解
+  - 示例文件：[points.js](file:///d:/code/threejs/Three.jsMastery/point-line-mesh/points.js)、[line.js](file:///d:/code/threejs/Three.jsMastery/point-line-mesh/line.js)、[mesh2.js](file:///d:/code/threejs/Three.jsMastery/point-line-mesh/mesh2.js)、[mesh3.js](file:///d:/code/threejs/Three.jsMastery/point-line-mesh/mesh3.js)
+- geojson-map（GeoJSON 地图入门）
+  - 学习内容：加载云南区划 GeoJSON，d3-geo 墨卡托投影，经纬度 → 平面坐标；多边形边界绘制；Raycaster 交互拾取与标注
+  - 入口文件：[geojson-map/src/main.js](file:///d:/code/threejs/Three.jsMastery/geojson-map/src/main.js)，图层实现：[features/mesh.js](file:///d:/code/threejs/Three.jsMastery/geojson-map/src/features/mesh.js)
+- china-population-bar-chart（高级地图与动效）
+  - 学习内容：Stencil 模板遮罩、天地图 WMTS/TMS 底图、墨卡托投影挤出、SpriteText 标签、Shader 动效（扫描覆盖层、脉冲圈）、环境变量开关
+  - 项目 README：[china-population-bar-chart/README.md](file:///d:/code/threejs/Three.jsMastery/china-population-bar-chart/README.md)
+
 ## 目录结构
 
 ```
@@ -30,6 +54,8 @@ Three.jsMastery/
 - 方式二：本地安装 three（可选）
   - 进入 `first-scene/` 并安装：`npm install three`
   - 在 `index.html` 的 import map 中将 `three` 指向本地路径（例如 `./node_modules/three/build/three.module.js`），并通过静态服务器访问页面。
+
+> 说明：部分子项目使用 Vite 本地开发（如 buffer-geometry、perspective-camera、china-population-bar-chart），可在各子目录内执行 `npm run dev` 启动；也有示例使用 import map 直接通过浏览器加载 CDN 模块（如 first-scene、point-line-mesh、geojson-map）。
 
 ## 代码概览
 
